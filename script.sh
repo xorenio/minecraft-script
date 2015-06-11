@@ -3,6 +3,31 @@
 DIR=${PWD##*/}
 FULLDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
+#### After save message
+### To enable change sMSG to 1 or higher
+sMSG="8"
+## first after save message
+sMSG1="1"
+sMSG2="2"
+sMSG3="3"
+sMSG4="4"
+sMSG5="5"
+sMSG6="6"
+sMSG7="7"
+sMSG8="8"
+
+# Time to wait after save 
+# Key:
+#   s  :  seconds (default)
+#   m  :  minutes
+#   h  :  hours
+#   d  :  days
+# example saveTime="30m"
+saveTime="6"
+
+jar="forge-1.7.10-10.13.3.1428-1.7.10-universal.jar"
+
+
 echo ""
 echo "Full path: $FULLDIR | Current folder name $DIR"
 
@@ -10,12 +35,12 @@ function usage {
 echo ""
 echo "Warning Incorrect usage of this bash file"
 echo ""
-echo "$0 <start|stop|restart|steamcmd>"
+echo "$0 <start|stop|restart|startcmd>"
 echo ""
 
 }
 function startcmd {
-	java -Xms2G -Xmx2G -jar forge-1.7.*.jar
+	java -Xms2G -Xmx2G -jar $jar
 }
 
 function start {
@@ -27,8 +52,8 @@ function start {
 	screen -dmS $DIR
 	sleep 1
 
-	screen -S $DIR -p 0 -X stuff 'cd $FULLDIR'$(echo -ne '\015')
-	screen -S $DIR -p 0 -X stuff '$FULLDIR/start.sh startcmd'$(echo -ne '\015')
+	screen -S $DIR -p 0 -X stuff 'cd '$FULLDIR$(echo -ne '\015')
+	screen -S $DIR -p 0 -X stuff $FULLDIR'/start.sh startcmd'$(echo -ne '\015')
 
 	echo "Server has been started"
 	echo ""
@@ -39,6 +64,9 @@ else
 	#If there is a screen with the name $server already running
 	echo "The screen for the server is already running. Connecting you now"
 	sleep 1
+	screen -S $DIR -p 0 -X stuff 'cd '$FULLDIR$(echo -ne '\015')
+	screen -S $DIR -p 0 -X stuff $FULLDIR'/start.sh startcmd'$(echo -ne '\015')
+
 	screen -x $DIR
 
 fi
@@ -56,14 +84,48 @@ else
 	#If there is a screen with the name $server already running
 	echo "The screen for the server is already running. Connecting you now"
 	sleep 1
+	screen -S $DIR -p 0 -X stuff 'save-all'$(echo -ne '\015')
+	if [ "$sMSG" -ge "1" ]; then
+	screen -S $DIR -p 0 -X stuff 'say '$sMSG1$(echo -ne '\015')
+	sleep 1
+	fi
+	if [ "$sMSG" -ge "2" ]; then
+	screen -S $DIR -p 0 -X stuff 'say '$sMSG2$(echo -ne '\015')
+	sleep 1
+	fi
+	if [ "$sMSG" -ge "3" ]; then
+	screen -S $DIR -p 0 -X stuff 'say '$sMSG3$(echo -ne '\015')
+	sleep 1
+	fi
+	if [ "$sMSG" -ge "4" ]; then
+	screen -S $DIR -p 0 -X stuff 'say '$sMSG4$(echo -ne '\015')
+	sleep 1
+	fi
+	if [ "$sMSG" -ge "5" ]; then
+	screen -S $DIR -p 0 -X stuff 'say '$sMSG5$(echo -ne '\015')
+	sleep 1
+	fi
+	if [ "$sMSG" -ge "6" ]; then
+	screen -S $DIR -p 0 -X stuff 'say '$sMSG6$(echo -ne '\015')
+	sleep 1
+	fi
+	if [ "$sMSG" -ge "7" ]; then
+	screen -S $DIR -p 0 -X stuff 'say '$sMSG7$(echo -ne '\015')
+	sleep 1
+	fi
+	if [ "$sMSG" -ge "8" ]; then
+	screen -S $DIR -p 0 -X stuff 'say '$sMSG8$(echo -ne '\015')
+	sleep 1
+	fi
+	sleep $saveTime
 	screen -S $DIR -p 0 -X stuff 'stop'$(echo -ne '\015')
 	screen -S "$DIR" -X quit;
 	
 	screen -dmS $DIR
 	sleep 1
 
-	screen -S $DIR -p 0 -X stuff 'cd $FULLDIR'$(echo -ne '\015')
-	screen -S $DIR -p 0 -X stuff '$FULLDIR/start.sh startcmd'$(echo -ne '\015')
+	screen -S $DIR -p 0 -X stuff 'cd '$FULLDIR$(echo -ne '\015')
+	screen -S $DIR -p 0 -X stuff $FULLDIR'/start.sh startcmd'$(echo -ne '\015')
 
 fi
 
@@ -81,6 +143,8 @@ else
 	#If there is a screen with the name $server already running
 	echo "The screen for the server is already running. Connecting you now"
 	sleep 1
+	screen -S $DIR -p 0 -X stuff 'save-all'$(echo -ne '\015')
+	sleep $saveTime
 	screen -S $DIR -p 0 -X stuff 'stop'$(echo -ne '\015')
 	sleep 8
 	screen -S "$DIR" -X quit;
@@ -157,6 +221,9 @@ fi
 
 if [ "$1" = "fixperms" ]; then
 	fixperms
+fi
+if [[ "$1" = "debug" ]]; then
+	screen -S $DIR -p 0 -X stuff 'cd '$FULLDIR$(echo -ne '\015')
 fi
 
 exit
