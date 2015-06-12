@@ -3,12 +3,12 @@
 DIR=${PWD##*/}
 FULLDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-#### After save message
+#### Message after save message
 ### To enable change sMSG to 1 or higher
-sMSG="8"
-## first after save message
-sMSG1="1"
-sMSG2="2"
+sMSG="2"
+## After save messages
+sMSG1="Server is about to restart in 1 minute"
+sMSG2="Any world changes after this point is a waste of time"
 sMSG3="3"
 sMSG4="4"
 sMSG5="5"
@@ -23,9 +23,11 @@ sMSG8="8"
 #   h  :  hours
 #   d  :  days
 # example saveTime="30m"
-saveTime="6"
+saveTime="1m"
 
-jar="forge-1.7.10-10.13.3.1428-1.7.10-universal.jar"
+### The excuted jar you can use server-*.jar and this will find server-<any>.jar
+## example jar="forge-1.7.10-*-universal.jar"
+jar="forge-1.7.10-10.13.2.1277-universal.jar"
 
 
 echo ""
