@@ -1,20 +1,12 @@
 #!/bin/bash
 
-DIR=${PWD##*/}
-FULLDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+# What jar
+# The jar usaged to start the server 
+jar="*.jar"
 
-#### Message after save message
-### To enable change sMSG to 1 or higher
-sMSG="2"
-## After save messages
-sMSG1="Server is about to restart in 1 minute"
-sMSG2="Any world changes after this point is a waste of time"
-sMSG3="3"
-sMSG4="4"
-sMSG5="5"
-sMSG6="6"
-sMSG7="7"
-sMSG8="8"
+# Ram usage
+# Set the ram suage for the minecraft server here
+ram="2G"
 
 # Time to wait after save 
 # Key:
@@ -22,14 +14,25 @@ sMSG8="8"
 #   m  :  minutes
 #   h  :  hours
 #   d  :  days
-# example saveTime="30m"
-saveTime="1m"
+# example saveTime="30m" (30 minutes)
+saveTime="6"
 
-### The excuted jar you can use server-*.jar and this will find server-<any>.jar
-## example jar="forge-1.7.10-*-universal.jar"
-jar="forge-1.7.10-10.13.2.1277-universal.jar"
+# After save message
+# To enable change sMSG to 1 or higher
+sMSG="8"
 
+# Before restart/stop messages
+sMSG1="1"
+sMSG2="2"
+sMSG3="3"
+sMSG4="4"
+sMSG5="5"
+sMSG6="6"
+sMSG7="7"
+sMSG8="8"
 
+DIR=${PWD##*/}
+FULLDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 echo ""
 echo "Full path: $FULLDIR | Current folder name $DIR"
 
@@ -37,12 +40,12 @@ function usage {
 echo ""
 echo "Warning Incorrect usage of this bash file"
 echo ""
-echo "$0 <start|stop|restart|startcmd>"
+echo "$0 <start|stop|restart|startcmd|send|connect>"
 echo ""
 
 }
 function startcmd {
-	java -Xms2G -Xmx2G -jar $jar
+	java -Xms$ram -Xmx$ram -jar $jar
 }
 
 function start {
@@ -66,9 +69,6 @@ else
 	#If there is a screen with the name $server already running
 	echo "The screen for the server is already running. Connecting you now"
 	sleep 1
-	screen -S $DIR -p 0 -X stuff 'cd '$FULLDIR$(echo -ne '\015')
-	screen -S $DIR -p 0 -X stuff $FULLDIR'/start.sh startcmd'$(echo -ne '\015')
-
 	screen -x $DIR
 
 fi
@@ -84,10 +84,11 @@ if ! screen -list | grep -q "$DIR"; then
 else
 
 	#If there is a screen with the name $server already running
-	echo "The screen for the server is already running. Connecting you now"
+	echo ""
 	sleep 1
 	screen -S $DIR -p 0 -X stuff 'save-all'$(echo -ne '\015')
 	if [ "$sMSG" -ge "1" ]; then
+	echo "Now sending messages to the server"
 	screen -S $DIR -p 0 -X stuff 'say '$sMSG1$(echo -ne '\015')
 	sleep 1
 	fi
@@ -128,7 +129,7 @@ else
 
 	screen -S $DIR -p 0 -X stuff 'cd '$FULLDIR$(echo -ne '\015')
 	screen -S $DIR -p 0 -X stuff $FULLDIR'/start.sh startcmd'$(echo -ne '\015')
-
+	echo "The $DIR server is now starting back up"
 fi
 
 }
@@ -139,9 +140,7 @@ if ! screen -list | grep -q "$DIR"; then
 
 	#If there is no screen with the name $server not running
 	echo "server is not running"
-
 else
-
 	#If there is a screen with the name $server already running
 	echo "The screen for the server is already running. Connecting you now"
 	sleep 1
@@ -151,6 +150,19 @@ else
 	sleep 8
 	screen -S "$DIR" -X quit;
 fi
+}
+
+function send {
+	if [ $# == "3" ]; then
+	screen -S $DIR -p 0 -X stuff $3$4$5$6$(echo -ne '\015')
+else
+	echo "Warning Incorrect usage of this bash file"
+	echo $0 send command
+fi
+}
+
+function connect {
+	screen -r $DIR
 }
 
 function fixperms {
@@ -201,31 +213,12 @@ function credit {
 	exit
 }
 
-if [ "$#" = "0" ]; then
+function debug {
+	screen -S $DIR -p 0 -X stuff 'cd '$FULLDIR$(echo -ne '\015')
+}
+
+if [ "$#" -eq "0" ]; then
 	usage
 fi
-
-if [ "$1" = "start" ]; then
-	start
-fi
-
-if [ "$1" = "startcmd" ]; then
-	startcmd
-fi
-
-if [ "$1" = "restart" ]; then
-	restart
-fi
-
-if [ "$1" = "stop" ]; then
-	stop
-fi
-
-if [ "$1" = "fixperms" ]; then
-	fixperms
-fi
-if [[ "$1" = "debug" ]]; then
-	screen -S $DIR -p 0 -X stuff 'cd '$FULLDIR$(echo -ne '\015')
-fi
-
-exit
+$1
+exit 1
